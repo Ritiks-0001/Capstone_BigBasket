@@ -1,0 +1,109 @@
+{
+  "table_counts": {
+    "products": 31,
+    "customers": 50,
+    "orders": 500,
+    "category_targets": 6
+  },
+  "status_counts": {
+    "Cancelled": 42,
+    "Delivered": 434,
+    "Pending": 24
+  },
+  "monthly_rows": 36,
+  "monthly_grand_total": 88282,
+  "monthly_columns": [
+    "category",
+    "month",
+    "order_count",
+    "total_revenue",
+    "avg_revenue"
+  ],
+  "q4a": [
+    [
+      "Household Essentials",
+      79,
+      21715,
+      274.873417721519
+    ],
+    [
+      "Personal Care",
+      66,
+      16382,
+      248.21212121212122
+    ],
+    [
+      "Bakery",
+      67,
+      15410,
+      230.0
+    ],
+    [
+      "Dairy & Eggs",
+      66,
+      14090,
+      213.4848484848485
+    ],
+    [
+      "Snacks & Beverages",
+      83,
+      10895,
+      131.26506024096386
+    ]
+  ],
+  "top_product_by_delivered_revenue": [
+    "Detergent 1kg",
+    7670,
+    "High"
+  ],
+  "target_report": [
+    [
+      "Bakery",
+      15410,
+      12000,
+      -3410,
+      28.416666666666668,
+      "Above Target"
+    ],
+    [
+      "Dairy & Eggs",
+      14090,
+      16500,
+      2410,
+      -14.606060606060606,
+      "Below Target - Watch"
+    ],
+    [
+      "Fruits & Vegetables",
+      9790,
+      12000,
+      2210,
+      -18.416666666666668,
+      "Below Target - Critical"
+    ],
+    [
+      "Household Essentials",
+      21715,
+      17000,
+      -4715,
+      27.735294117647058,
+      "Above Target"
+    ],
+    [
+      "Personal Care",
+      16382,
+      15500,
+      -882,
+      5.690322580645161,
+      "Above Target"
+    ],
+    [
+      "Snacks & Beverages",
+      10895,
+      13000,
+      2105,
+      -16.192307692307693,
+      "Below Target - Critical"
+    ]
+  ]
+}
