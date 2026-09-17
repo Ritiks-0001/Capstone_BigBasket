@@ -173,10 +173,10 @@ Build each as its own worksheet — drag the measure to **Text** on the Marks ca
 
 | Sheet name | Field on Text | Aggregation | Expected value | Sheet title |
 |---|---|---|---|---|
-| `KPI Total Revenue` | `Total Revenue` | SUM | **₹88,282** | Total Revenue (INR), Jan–Jun 2026 |
-| `KPI Delivered Orders` | `Order Count` | SUM | **434** | Total Delivered Orders |
-| `KPI Avg Order Value` | `Average Order Value` | (calculated) | **₹203.41** | Average Order Value (INR) |
-| `KPI Categories On Target` | `Categories Meeting Target` | (calculated) | **3** | Categories Meeting Target (of 6) |
+| `KPI1: Total Revenue` | `Total Revenue` | SUM | **₹88,282** | Total Revenue (INR), Jan–Jun 2026 |
+| `KPI2: Delivered Orders` | `Order Count` | SUM | **434** | Total Delivered Orders |
+| `KPI3: Avg Order Value` | `Average Order Value` | (calculated) | **₹203.41** | Average Order Value (INR) |
+| `KPI4: Categories On Target` | `Categories Meeting Target` | (calculated) | **3** | Categories Meeting Target (of 6) |
 
 For the last card, edit the title to read literally **"Categories Meeting Target (of 6)"** so the
 "out of 6" is on screen, as the brief requires. Format `Average Order Value` as `₹#,##0.00`.
