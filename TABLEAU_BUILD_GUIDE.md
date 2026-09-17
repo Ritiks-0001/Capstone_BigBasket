@@ -30,7 +30,17 @@ connected the wrong file — stop and re-export from Part 1.
 Right-click in the Data pane → **Create Calculated Field** for each. Names must match exactly,
 because every sheet below references them.
 
-### 2.1 `Target Revenue` — the Part 1/Part 2 targets, row-level
+### 2.1 `Month Date` — turns `"2026-01"` into a real date
+
+```
+MAKEDATE(INT(LEFT([Month], 4)), INT(RIGHT([Month], 2)), 1)
+```
+
+`MAKEDATE` is used rather than `DATEPARSE` because it works on every Tableau Public connector
+without regional-locale surprises. Each month becomes the 1st of that month, which is all a
+monthly axis needs.
+
+### 2.2 `Target Revenue` — the Part 1/Part 2 targets, row-level
 
 ```
 CASE [Category]
@@ -50,7 +60,7 @@ These are the same six fixed targets as the SQL `category_targets` table and the
 > `SUM([Target Revenue])` returns **6× the real target**. Always aggregate it with
 > `MIN()` or `AVG()`, never `SUM()`.
 
-### 2.2 `Tier` — the three-way classification from Parts 1 and 2
+### 2.3 `Tier` — the three-way classification from Parts 1 and 2
 
 ```
 IF [Category] = "Household Essentials"
@@ -77,7 +87,7 @@ re-classifying a category off two months of partial data.
 > END
 > ```
 
-### 2.3 `Average Order Value`
+### 2.4 `Average Order Value`
 
 ```
 SUM([Total Revenue]) / SUM([Order Count])
@@ -87,24 +97,26 @@ Divide the sums — **do not** use `AVG([Avg Revenue])`. Averaging the pre-compu
 averages is an average-of-averages and weights a 5-order month the same as a 20-order month.
 The correct value here is **₹203.41**; the average-of-averages route gives a different, wrong number.
 
-### 2.4 `Categories Meeting Target`
+### 2.5 `Categories Meeting Target`
+
 ```
-IF
-    (ATTR([Category]) = "Fruits & Vegetables"  AND SUM([Total Revenue]) >= 12000)
- OR (ATTR([Category]) = "Dairy & Eggs"         AND SUM([Total Revenue]) >= 16500)
- OR (ATTR([Category]) = "Snacks & Beverages"   AND SUM([Total Revenue]) >= 13000)
- OR (ATTR([Category]) = "Personal Care"        AND SUM([Total Revenue]) >= 15500)
- OR (ATTR([Category]) = "Household Essentials" AND SUM([Total Revenue]) >= 17000)
- OR (ATTR([Category]) = "Bakery"               AND SUM([Total Revenue]) >= 12000)
-THEN 1
-ELSE 0
-END
-```
-```
-STR(COUNTD(IF { FIXED [Category] : SUM([Total Revenue]) } >= [Target Revenue] THEN [Category] END)) + " / 6"
+STR(
+  COUNTD(
+    IF { FIXED [Category] : SUM([Total Revenue]) } >= [Target Revenue]
+    THEN [Category] END
+  )
+) + " / 6"
 ```
 
-`COUNTD` over a row-level `IF` counts distinct categories, not rows — so this returns **3**, not 18.
+The FIXED LOD pre-aggregates each category's six monthly rows, so the comparison against
+`[Target Revenue]` happens at row level and `COUNTD` is free to count distinct categories rather
+than rows. Drop this on Text on a blank sheet and it returns **3 / 6**.
+
+> **Caveat:** FIXED LODs are computed *before* dimension filters, so the dashboard's category
+> filter will not move this card unless you right-click that filter on the Filters shelf →
+> **Add to Context**. Leaving it fixed is a defensible choice — "3 of 6 meeting target" is a
+> statement about the whole business, not the current selection — but know which behaviour you
+> have shipped.
 
 ---
 
@@ -185,7 +197,7 @@ For the last card, edit the title to read literally **"Categories Meeting Target
 │  ₹88,282   │    434     │  ₹203.41   │    3 / 6   │  Tier    │
 │  Revenue   │  Delivered │    AOV     │ On Target  │  Legend  │
 ├────────────┴────────────┴────────────┴────────────┤          │
-│                                                   │ Catagory │
+│                                                   │ Category │
 │   Monthly Revenue Trend (line)                    │  Filter  │
 │                                                   │          │
 ├───────────────────────────────────────────────────┤          │
@@ -205,8 +217,10 @@ plus tier legend are docked on the right.
    - Confirm the **Tier colour legend is visible** on the dashboard (drag it from the sheet's
      legend if Tableau did not add it automatically).
    - Test it: deselect *Household Essentials* → the Total Revenue KPI must drop from ₹88,282 to
-     ₹66,567 and Categories Meeting Target from 3 to 2. If the KPIs do not move, you skipped the
-     "All Using This Data Source" step.
+     ₹66,567 and the bar chart must fall to five bars. If the KPI cards do not move, you skipped
+     the "All Using This Data Source" step.
+   - The Categories Meeting Target card will stay at 3 / 6 unless you added its filter to context
+     (see the caveat in Step 2.5). That is expected behaviour, not a fault.
 5. Consistency pass: one font family throughout, the same three tier colours on every mark, every
    currency figure with `₹` and **no `$` anywhere**.
 
