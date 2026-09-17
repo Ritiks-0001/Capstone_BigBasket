@@ -22,7 +22,9 @@ demand problem.
 
 ## 🔗 Live Tableau Public dashboard
 
-[text](https://public.tableau.com/views/BigBasket_Capstone_17893942536920/BigBasketCategoryPerformance?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+**[BigBasket Category Performance — live dashboard](https://public.tableau.com/views/BigBasket_Capstone_17893942536920/BigBasketCategoryPerformance?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)**
+
+> Opens without a login. Build steps: [`TABLEAU_BUILD_GUIDE.md`](TABLEAU_BUILD_GUIDE.md)
 
 ---
 
@@ -51,7 +53,7 @@ demand problem.
 ├── orders_raw.csv                   ← messy raw export — Part 4 input only (508 rows)
 ├── products.csv                     ← product catalogue with supplier — Part 4 merge input
 │
-├── BigBasket_category_analysis.xlsx ← Part 2 workbook (Monthly Data · Category Targets ·
+├── BigBasket_Category_Analysis.xlsx ← Part 2 workbook (Monthly Data · Category Targets ·
 │                                      Pivot · Category Summary)
 └── analysis.ipynb                   ← Part 4 notebook — cleaning, analysis, cross-validation
 ```
@@ -98,7 +100,7 @@ This writes three files: `bigbasket_capstone.db` (Parts 1–3), plus `orders_raw
 | 4 | `02_aggregation_joins.sql` | (a) INNER JOIN aggregation with `HAVING total_revenue > 10000`; (b) LEFT JOIN using `COUNT(o.order_id)` so *Premium Face Cream 50g* correctly appears with **0** orders |
 | 5 | `03_reporting.sql` | (a) three-tier `CASE WHEN`; (b) category × month report via `strftime('%Y-%m', order_date)`; (c) variance and percentage variance against `category_targets`, using `* 100.0` to avoid SQLite integer-division truncation |
 | 6 | `monthly_category_revenue.csv` | Direct unedited export of Task 5(b) |
-| 7 | `ai_log.md` | ## Prompt #1 — SQL Query Draft/Debug + verification |
+| 7 | `ai_log.md` | RCTCF prompt #1 (SQL query draft/debug) with its verification step |
 
 ### Part 2 — Spreadsheet cross-check
 
@@ -140,7 +142,20 @@ tier legend visible.
 **📓 Notebook: [`analysis.ipynb`](analysis.ipynb)** — runs from `orders_raw.csv` (508 rows) and
 `products.csv`.
 
-Also contains four matplotlib charts with finding-stating titles and three
+| Step | Result |
+|---|---|
+| Duplicates removed by `order_id` | 8 → **exactly 500 rows** |
+| `city` values normalised (`.str.strip().str.title()`) | 14 → **4** |
+| `category` values normalised | 18 → **6** |
+| Missing `amount_inr` | **10** (9 Delivered) — excluded from revenue, never filled |
+| Missing `rating` | **66** — all Cancelled/Pending; left unfilled by business rule |
+| IQR fence (Delivered, non-null) | Q1 90.00 · Q3 275.00 · IQR 185.00 · **upper fence 552.50** |
+| Rows capped via `.clip()` | **16 Delivered** (21 overall) — capped, not dropped |
+| Total delivered revenue | **₹84,637.00** from 425 orders |
+| **Top category** | **Household Essentials — ₹20,910.00** ✅ matches Part 1 |
+| **Top supplier** (via `pd.merge()` on `product_id`) | **HomeEssentials Traders — ₹20,910.00** ✅ matches Part 1 |
+
+The notebook also contains four matplotlib charts with finding-stating titles and three
 What / Why it matters / Next step insight observations.
 
 ### AI-assisted prompting log
